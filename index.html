@@ -1,0 +1,78 @@
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebDevDesafio</title>
+    <script src="https://unpkg.com/vue@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>JEEC Speakers</h1>
+
+    <div id="app">
+        <ul>
+            <li v-for="people in speakers" :key="people.name">
+                <h3>{{ people.name }}</h3>
+                <img :src="people.img" :alt="people.name">
+                <p>{{ people.desc }}</p>
+            </li>
+        </ul>
+    </div>
+
+    <section id="bilhetes">
+        <h2> Reservar Bilhete JEEC</h2>
+
+        <div class="calendar-header">
+            <button class="cal-nav" @click="prevMonth">&#8249;</button>
+            <span>{{ monthLabel }}</span>
+            <button class="cal-nav" @click="nextMonth">&#8250;</button>
+        </div>
+
+        <div class="calendar-grid">
+            <div class="cal-day-name" v-for="d in ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom']">{{ d }}</div>
+            <div class="cal-day empty" v-for="_ in leadingBlanks"></div>
+            <div
+                v-for="day in daysInMonth"
+                :key="day"
+                class="cal-day"
+                :class="{
+                    'jeec-day': isJeecDay(day),
+                    'selected': selectedDay === day && selectedMonth === viewMonth && selectedYear === viewYear,
+                    'past': isPast(day),
+                    'available': !isPast(day)
+                }"
+                @click="selectDay(day)"
+            >{{ day }}</div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot dot-jeec"></div> Dia JEEC</div>
+            <div class="legend-item"><div class="legend-dot dot-selected"></div> Dia selecionado</div>
+        </div>
+
+        <div class="booking-prompt" v-if="selectedJeecDate">
+            <p>Estás a escolher um bilhete para o dia <strong>{{ selectedJeecDate }}</strong> da JEEC.</p>
+            <div class="ticket-qty">
+                <label for="qty">Nº de bilhetes</label>
+                <input id="qty" type="number" min="1" max="10" v-model.number="qty">
+            </div>
+            <button class="btn-reservar" @click="reservar">Reservar</button>
+        </div>
+
+        <div class="confirmation" v-if="confirmationMsg">
+            ✅ {{ confirmationMsg }}
+        </div>
+    </section>
+
+    <p style="margin-top:2rem; line-height:1.7;">
+        Did you ever hear the tragedy of Darth Plagueis The Wise? I thought not. But
+        don't worry we got you. Somehow, Palpatine returned...just to attend the next JEEC
+        edition as a keynote speaker! He will present "Empire 101, my story and advice",
+        with some tips and tricks on how to take Olivença back from the spanish and start
+        the new age of the Great Portuguese Empire. Don't miss it!
+    </p>
+
+    <script src="app.js"></script>
+    <script src="bilhetes.js"></script>
+</body>
+</html>
