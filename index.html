@@ -9,70 +9,136 @@
 <body>
     <h1>JEEC Speakers</h1>
 
-    <div id="app">
-        <ul>
-            <li v-for="people in speakers" :key="people.name">
-                <h3>{{ people.name }}</h3>
-                <img :src="people.img" :alt="people.name">
-                <p>{{ people.desc }}</p>
-            </li>
-        </ul>
-    </div>
+    <div class="layout-principal">
 
-    <section id="bilhetes">
-        <h2> Reservar Bilhete JEEC</h2>
-
-        <div class="calendar-header">
-            <button class="cal-nav" @click="prevMonth">&#8249;</button>
-            <span>{{ monthLabel }}</span>
-            <button class="cal-nav" @click="nextMonth">&#8250;</button>
-        </div>
-
-        <div class="calendar-grid">
-            <div class="cal-day-name" v-for="d in ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom']">{{ d }}</div>
-            <div class="cal-day empty" v-for="_ in leadingBlanks"></div>
-            <div
-                v-for="day in daysInMonth"
-                :key="day"
-                class="cal-day"
-                :class="{
-                    'jeec-day': isJeecDay(day),
-                    'selected': selectedDay === day && selectedMonth === viewMonth && selectedYear === viewYear,
-                    'past': isPast(day),
-                    'available': !isPast(day)
-                }"
-                @click="selectDay(day)"
-            >{{ day }}</div>
-        </div>
-
-        <div class="legend">
-            <div class="legend-item"><div class="legend-dot dot-jeec"></div> Dia JEEC</div>
-            <div class="legend-item"><div class="legend-dot dot-selected"></div> Dia selecionado</div>
-        </div>
-
-        <div class="booking-prompt" v-if="selectedJeecDate">
-            <p>Estás a escolher um bilhete para o dia <strong>{{ selectedJeecDate }}</strong> da JEEC.</p>
-            <div class="ticket-qty">
-                <label for="qty">Nº de bilhetes</label>
-                <input id="qty" type="number" min="1" max="10" v-model.number="qty">
+        <!-- Coluna da esquerda -->
+        <div class="coluna-esquerda">
+            <div id="app">
+                <div class="slideshow">
+                    <button class="slide-nav" @click="prevSlide">&#8249;</button>
+                    <div class="slide">
+                        <img :src="speakers[slideAtual].img" :alt="speakers[slideAtual].name">
+                        <h3>{{ speakers[slideAtual].name }}</h3>
+                        <p>{{ speakers[slideAtual].desc }}</p>
+                        <div class="slide-dots">
+                            <span
+                                v-for="(s, i) in speakers"
+                                :key="i"
+                                class="dot"
+                                :class="{ ativo: i === slideAtual }"
+                                @click="slideAtual = i"
+                            ></span>
+                        </div>
+                    </div>
+                    <button class="slide-nav" @click="nextSlide">&#8250;</button>
+                </div>
             </div>
-            <button class="btn-reservar" @click="reservar">Reservar</button>
+
+
+            <p class="palpatine-text">
+                Did you ever hear the tragedy of Darth Plagueis The Wise? I thought not. But
+                don't worry we got you. Somehow, Palpatine returned...just to attend the next JEEC
+                edition as a keynote speaker! He will present "Empire 101, my story and advice",
+                with some tips and tricks on how to take Olivença back from the spanish and start
+                the new age of the Great Portuguese Empire. Don't miss it!
+            </p>
+
+            <!--  Bilhetes  -->
+            <div id="bilhetes">
+                <div class="bilhetes-topo">
+                    <h2> Reservar Bilhete JEEC</h2>
+                    <button class="btn-mostrar" @click="mostrarCalendario = !mostrarCalendario">
+                        {{ mostrarCalendario ? 'Fechar calendário' : 'Comprar bilhete' }}
+                    </button>
+                </div>
+
+                <template v-if="mostrarCalendario">
+                    <div class="calendar-header">
+                        <button class="cal-nav" @click="prevMonth">&#8249;</button>
+                        <span>{{ monthLabel }}</span>
+                        <button class="cal-nav" @click="nextMonth">&#8250;</button>
+                    </div>
+
+                    <div class="calendar-grid">
+                        <div class="cal-day-name" v-for="d in ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom']">{{ d }}</div>
+                        <div class="cal-day empty" v-for="_ in leadingBlanks"></div>
+                        <div
+                            v-for="day in daysInMonth"
+                            :key="day"
+                            class="cal-day"
+                            :class="{
+                                'jeec-day': isJeecDay(day),
+                                'selected': selectedDay === day && selectedMonth === viewMonth && selectedYear === viewYear,
+                                'past': isPast(day),
+                                'available': !isPast(day)
+                            }"
+                            @click="selectDay(day)"
+                        >{{ day }}</div>
+                    </div>
+
+                    <div class="legend">
+                        <div class="legend-item"><div class="legend-dot dot-jeec"></div> Dia JEEC</div>
+                        <div class="legend-item"><div class="legend-dot dot-selected"></div> Dia selecionado</div>
+                    </div>
+
+                    <div class="booking-prompt" v-if="selectedJeecDate">
+                        <p>Estás a escolher um bilhete para o dia <strong>{{ selectedJeecDate }}</strong> da JEEC.</p>
+                        <div class="ticket-qty">
+                            <label for="qty">Nº de bilhetes</label>
+                            <input id="qty" type="number" min="1" max="69" v-model.number="qty">
+                        </div>
+                        <button class="btn-reservar" @click="reservar">Reservar</button>
+                    </div>
+
+                    <div class="confirmation" v-if="confirmationMsg">
+                         {{ confirmationMsg }}
+                    </div>
+                </template>
+            </div>
         </div>
 
-        <div class="confirmation" v-if="confirmationMsg">
-            ✅ {{ confirmationMsg }}
-        </div>
-    </section>
+        <!-- Coluna da direita-->
+        <div class="coluna-direita" id="interacao">
+            <section id="votacao">
+                <h2> Vota no teu Speaker favorito</h2>
+                <div class="vote-grid">
+                    <div
+                        v-for="speaker in speakers"
+                        :key="speaker.name"
+                        class="vote-card"
+                        :class="{ voted: voto === speaker.name }"
+                        @click="votar(speaker.name)"
+                    >
+                        <img :src="speaker.img" :alt="speaker.name">
+                        <h3>{{ speaker.name }}</h3>
+                        <span class="vote-badge" v-if="voto === speaker.name">✓ Escolhido</span>
+                    </div>
+                </div>
+                <div class="vote-result" v-if="voto">
+                    Votaste em <strong>{{ voto }}</strong> como o teu speaker favorito!
+                </div>
+            </section>
 
-    <p style="margin-top:2rem; line-height:1.7;">
-        Did you ever hear the tragedy of Darth Plagueis The Wise? I thought not. But
-        don't worry we got you. Somehow, Palpatine returned...just to attend the next JEEC
-        edition as a keynote speaker! He will present "Empire 101, my story and advice",
-        with some tips and tricks on how to take Olivença back from the spanish and start
-        the new age of the Great Portuguese Empire. Don't miss it!
-    </p>
+            <section id="opinioes">
+                <h2> Comentários</h2>
+                <div class="opiniao-form">
+                    <input type="text" v-model="opinNome" placeholder="Nome">
+                    <textarea v-model="opinTexto" placeholder="Escreve algo..."></textarea>
+                    <button class="btn-opiniao" @click="submeterOpiniao" :disabled="!opinTexto.trim()">Publicar</button>
+                </div>
+                <div class="opiniao-lista" v-if="opinioes.length">
+                    <div class="opiniao-item" v-for="(op, i) in opinioes" :key="i">
+                        <div class="nome">{{ op.nome || 'Anónimo' }}</div>
+                        <p class="texto">{{ op.texto }}</p>
+                    </div>
+                </div>
+                <p class="opiniao-vazia" v-else>Ainda não há comentário. Manda um palpite!</p>
+            </section>
+        </div>
+    </div>
 
     <script src="app.js"></script>
     <script src="bilhetes.js"></script>
+    <script src="votacao.js"></script>
 </body>
 </html>

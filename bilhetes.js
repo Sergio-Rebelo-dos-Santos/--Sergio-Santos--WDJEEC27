@@ -7,16 +7,14 @@ const JEEC_DAYS = [
 ];
 
 const MONTH_NAMES_PT = [
-    'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-    'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
+    'Janeiro','Fevereiro','Março','Abril','Maio','Junho', 'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
 ];
-
-    /* Vi que havia uma extensão para usar o próprio calendario do vue, mas dava mais trabalho do que ir buscar este */
 
 Vue.createApp({
     data() {
         const today = new Date();
         return {
+            mostrarCalendario: false,
             viewYear:      today.getFullYear(),
             viewMonth:     today.getMonth() + 1,
             selectedDay:   null,
